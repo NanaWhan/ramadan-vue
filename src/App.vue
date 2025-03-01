@@ -15,7 +15,6 @@ import TheFooter from '@/components/layout/TheFooter.vue'
 </script>
 
 <style>
-@import './assets/main.css';
 
 /* Base styles that will apply site-wide */
 :root {

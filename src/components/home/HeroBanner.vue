@@ -4,7 +4,7 @@
     <div class="absolute inset-0 bg-dark-color/60 z-0"></div>
     <div 
       class="absolute inset-0 bg-cover bg-center z-[-1]" 
-      style="background-image: url('@/assets/images/banner.jpg');"
+      style="background-image: url('./assets/images/banner.jpg');"
     ></div>
     
     <div class="container mx-auto px-4 py-20 pt-32 z-10">
