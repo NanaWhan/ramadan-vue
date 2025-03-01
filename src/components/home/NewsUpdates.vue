@@ -15,7 +15,7 @@
         >
           <div class="overflow-hidden h-48">
             <img 
-              :src="getImageUrl(news.image)" 
+              :src="news.imageUrl" 
               :alt="news.title"
               class="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
             />
@@ -34,41 +34,34 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import news1Image from '../../assets/images/news1.jpg'
+import news2Image from '../../assets/images/news2.jpg'
+import news3Image from '../../assets/images/news3.jpg'
+import placeholderImage from '../../assets/images/placeholder.jpg'
 
 interface NewsItem {
   title: string
   description: string
-  image: string
+  imageUrl: string
 }
 
 const newsItems = ref<NewsItem[]>([
   {
     title: 'Project Milestone Reached',
     description: '5,000 food packages distributed in first week',
-    image: 'news1.jpg'
+    imageUrl: news1Image
   },
   {
     title: 'Volunteer Training Complete',
     description: '100 volunteers ready for distribution',
-    image: 'news2.jpg'
+    imageUrl: news2Image
   },
   {
     title: 'New Partnership Announced',
     description: 'Local businesses join our mission',
-    image: 'news3.jpg'
+    imageUrl: news3Image
   }
 ])
-
-// Method to get the correct image URL
-const getImageUrl = (filename: string): string => {
-  try {
-    // Use dynamic import to get the image URL
-    return new URL(`../../assets/images/team/${filename}`, import.meta.url).href
-  } catch (error) {
-    console.error('Error loading image:', error)
-    return new URL('../../assets/images/team/placeholder.jpg', import.meta.url).href
-  }
-}
 </script>
 
 <style scoped>

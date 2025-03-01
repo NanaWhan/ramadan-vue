@@ -2,10 +2,11 @@
   <section id="home" class="relative min-h-screen flex items-center text-white">
     <!-- Background image with overlay -->
     <div class="absolute inset-0 bg-dark-color/60 z-0"></div>
-    <div 
-  class="absolute inset-0 bg-cover bg-center z-[-1]" 
-  :style="{ backgroundImage: `url(${getBannerImage()})` }"
-></div>
+    <img 
+      :src="bannerImage" 
+      class="absolute inset-0 object-cover w-full h-full z-[-1]"
+      alt="Banner" 
+    />
     
     <div class="container mx-auto px-4 py-20 pt-32 z-10">
       <div class="md:w-2/3 lg:w-1/2">
@@ -40,6 +41,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
+import bannerImage from '../../assets/images/banner.jpg'
 
 const currentYear = computed(() => new Date().getFullYear())
 
@@ -63,10 +65,6 @@ const actionCards = [
     link: '/#partner'
   }
 ]
-
-const getBannerImage = () => {
-  return new URL('../assets/images/banner.jpg', import.meta.url).href
-}
 </script>
 
 <style scoped>
