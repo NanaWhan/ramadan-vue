@@ -1,3 +1,3 @@
 <template>
-  <p>Hi</p>
+    <H1>Hello</H1>
 </template>
