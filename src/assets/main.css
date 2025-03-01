@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 /* Import the Inter font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 /* Base styles */
 :root {
-  --accent-color: #F4BE37;
-  --secondary-color: #E2EAF1;
+  --accent-color: #f4be37;
+  --secondary-color: #e2eaf1;
   --dark-color: #092035;
-  --grey-color: #E2EAF1;
-  --body-text-color: #7C8990;
-  --light-text-color: #9CA5AD;
+  --grey-color: #e2eaf1;
+  --body-text-color: #7c8990;
+  --light-text-color: #9ca5ad;
   --link-color: #092035;
 }
 
@@ -21,34 +21,34 @@
   .padding-large {
     @apply py-20;
   }
-  
+
   .padding-medium {
     @apply py-12;
   }
-  
+
   .padding-small {
     @apply py-8;
   }
-  
+
   /* Add smooth scrolling */
   html {
     scroll-behavior: smooth;
   }
-  
+
   /* Button styles */
   .btn-primary {
     @apply bg-accent-color text-dark-color rounded-full px-6 py-2 font-bold transition-colors hover:bg-yellow-600;
   }
-  
+
   .btn-outline {
     @apply border border-accent-color text-accent-color rounded-full px-6 py-2 font-bold transition-colors hover:bg-accent-color hover:text-dark-color;
   }
-  
+
   /* Card styles */
   .card {
     @apply bg-white rounded-lg shadow-md p-6;
   }
-  
+
   .card-dark {
     @apply bg-dark-color text-gray-300 rounded-lg shadow-md p-6;
   }
