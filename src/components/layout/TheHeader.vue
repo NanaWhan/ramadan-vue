@@ -1,12 +1,14 @@
 <template>
-  <header class="fixed top-0 left-0 w-full py-1 text-white z-10 transition-all" 
+  <header class="fixed top-0 left-0 w-full text-white z-50 transition-all header-container h-14" 
           :class="{ 'bg-dark-color': scrolled }">
-    <nav class="container mx-auto px-3 mb-3 flex items-center justify-between">
-      <RouterLink to="/" class="navbar-brand">
-        <img :src="logoImage" alt="Ramadan Relief Logo" class="logo max-w-[200px]" />
+    <div class="w-full flex items-center justify-between h-full">
+      <!-- Logo aligned to far left with no container constraints -->
+      <RouterLink to="/" class="navbar-brand ml-4 md:ml-6">
+        <img :src="logoImage" alt="Ramadan Relief Logo" class="logo max-h-10" />
       </RouterLink>
       
-      <button class="text-white md:hidden" 
+      <!-- Mobile Menu Button -->
+      <button class="text-white md:hidden mr-4" 
               type="button" 
               @click="isMenuOpen = !isMenuOpen">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -45,21 +47,21 @@
       </div>
       
       <!-- Desktop Menu -->
-      <div class="hidden md:flex items-center">
+      <div class="hidden md:flex items-center mr-6">
         <ul class="flex items-center space-x-4">
           <li v-for="(item, index) in navItems" :key="index">
-            <RouterLink :to="item.to" class="text-gray-300 hover:text-white px-2 py-2 relative nav-link">
+            <RouterLink :to="item.to" class="text-gray-300 hover:text-white px-2 py-1 relative nav-link">
               {{ item.label }}
             </RouterLink>
           </li>
           <li>
-            <RouterLink to="/donate" class="bg-accent-color text-dark-color rounded-full px-6 py-2 ml-4 font-bold">
+            <RouterLink to="/donate" class="bg-accent-color text-dark-color rounded-full px-5 py-1.5 ml-4 font-bold">
               Donate Now
             </RouterLink>
           </li>
         </ul>
       </div>
-    </nav>
+    </div>
   </header>
 </template>
 
@@ -95,6 +97,11 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.header-container {
+  display: flex;
+  align-items: center;
+}
+
 .bg-dark-color {
   background-color: var(--dark-color);
 }
@@ -111,7 +118,7 @@ onUnmounted(() => {
   content: '';
   position: absolute;
   left: 0;
-  bottom: 0;
+  bottom: -2px;
   width: 0;
   border-bottom: 2px solid var(--accent-color);
   transition: width 0.3s ease-out;

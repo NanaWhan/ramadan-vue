@@ -14,6 +14,7 @@
   --body-text-color: #7c8990;
   --light-text-color: #9ca5ad;
   --link-color: #092035;
+  --header-height: 80px; /* Header height variable */
 }
 
 /* Utility classes for special effects */
@@ -33,6 +34,7 @@
   /* Add smooth scrolling */
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: var(--header-height); /* Add scroll padding to prevent anchor links from going under header */
   }
 
   /* Button styles */
@@ -52,4 +54,9 @@
   .card-dark {
     @apply bg-dark-color text-gray-300 rounded-lg shadow-md p-6;
   }
+}
+
+/* Fix for section anchors to account for fixed header */
+section[id] {
+  scroll-margin-top: var(--header-height);
 }
