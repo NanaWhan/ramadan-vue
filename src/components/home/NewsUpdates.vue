@@ -62,10 +62,11 @@ const newsItems = ref<NewsItem[]>([
 // Method to get the correct image URL
 const getImageUrl = (filename: string): string => {
   try {
-    return new URL(`../../assets/images/${filename}`, import.meta.url).href
+    // Use dynamic import to get the image URL
+    return new URL(`../../assets/images/team/${filename}`, import.meta.url).href
   } catch (error) {
     console.error('Error loading image:', error)
-    return new URL('../../assets/images/placeholder.jpg', import.meta.url).href
+    return new URL('../../assets/images/team/placeholder.jpg', import.meta.url).href
   }
 }
 </script>

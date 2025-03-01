@@ -3,9 +3,9 @@
     <!-- Background image with overlay -->
     <div class="absolute inset-0 bg-dark-color/60 z-0"></div>
     <div 
-      class="absolute inset-0 bg-cover bg-center z-[-1]" 
-      style="background-image: url('./assets/images/banner.jpg');"
-    ></div>
+  class="absolute inset-0 bg-cover bg-center z-[-1]" 
+  :style="{ backgroundImage: `url(${getBannerImage()})` }"
+></div>
     
     <div class="container mx-auto px-4 py-20 pt-32 z-10">
       <div class="md:w-2/3 lg:w-1/2">
@@ -63,6 +63,10 @@ const actionCards = [
     link: '/#partner'
   }
 ]
+
+const getBannerImage = () => {
+  return new URL('../assets/images/banner.jpg', import.meta.url).href
+}
 </script>
 
 <style scoped>

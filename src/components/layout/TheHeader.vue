@@ -3,7 +3,7 @@
           :class="{ 'bg-dark-color': scrolled }">
     <nav class="container mx-auto px-3 mb-3 flex items-center justify-between">
       <RouterLink to="/" class="navbar-brand">
-        <img src="../assets/images/logo2.png" alt="Ramadan Relief Logo" class="logo max-w-[200px]" />
+        <img :src="logoImage" alt="Ramadan Relief Logo" class="logo max-w-[200px]" />
       </RouterLink>
       
       <button class="text-white md:hidden" 
@@ -66,6 +66,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import logoImage from '@/assets/images/logo2.png'
 
 const scrolled = ref(false)
 const isMenuOpen = ref(false)
@@ -90,6 +91,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
+
 </script>
 
 <style scoped>

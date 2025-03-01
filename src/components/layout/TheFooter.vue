@@ -4,11 +4,7 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
           <RouterLink to="/" class="inline-block mb-4">
-            <img
-              src="../assets/images/logo2.png"
-              class="max-w-[120px]"
-              alt="Ramadan Relief Logo"
-            />
+            <img :src="logoImage" alt="Ramadan Relief Logo" class="logo max-w-[200px]" />
           </RouterLink>
           <p class="text-gray-400">
             Providing essential food and relief packages to underprivileged
@@ -85,6 +81,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { RouterLink } from "vue-router";
+import logoImage from '@/assets/images/logo2.png'
 
 const email = ref("");
 const currentYear = computed(() => new Date().getFullYear());
