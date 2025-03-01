@@ -31,7 +31,10 @@
         <div class="p-4">
           <ul class="space-y-4">
             <li v-for="(item, index) in navItems" :key="index">
-              <RouterLink :to="item.to" class="text-gray-300 hover:text-white block py-2" 
+              <RouterLink 
+                :to="item.to" 
+                class="text-gray-300 hover:text-white block py-2" 
+                :class="{ 'text-accent-color font-medium': isActiveRoute(item.to) }"
                 @click="isMenuOpen = false">
                 {{ item.label }}
               </RouterLink>
@@ -50,7 +53,11 @@
       <div class="hidden md:flex items-center mr-6">
         <ul class="flex items-center space-x-4">
           <li v-for="(item, index) in navItems" :key="index">
-            <RouterLink :to="item.to" class="text-gray-300 hover:text-white px-2 py-1 relative nav-link">
+            <RouterLink 
+              :to="item.to" 
+              class="text-gray-300 hover:text-white px-2 py-1 relative nav-link"
+              :class="{ 'is-active': isActiveRoute(item.to) }"
+            >
               {{ item.label }}
             </RouterLink>
           </li>
@@ -66,12 +73,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { RouterLink } from 'vue-router'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 import logoImage from '@/assets/images/logo2.png'
 
 const scrolled = ref(false)
 const isMenuOpen = ref(false)
+const route = useRoute()
 
 const navItems = [
   { label: 'Home', to: '/' },
@@ -82,16 +90,51 @@ const navItems = [
   { label: 'Contact', to: '/contact' }
 ]
 
+// Check if a route is active
+const isActiveRoute = (path: string) => {
+  // Handle hash links to sections on the home page (/#section)
+  if (path.includes('#')) {
+    const hashPart = path.split('#')[1]
+    // Check if current hash matches
+    if (window.location.hash === `#${hashPart}`) {
+      return true
+    }
+    // If we're on home page with no hash yet, don't highlight
+    if (route.path === '/' && !window.location.hash && path.startsWith('/#')) {
+      return false
+    }
+    return false
+  }
+  
+  // Exact match for home page
+  if (path === '/' && route.path === '/' && !window.location.hash) {
+    return true
+  }
+  
+  // Regular routes (non-hash)
+  if (path !== '/' && route.path.startsWith(path) && !path.includes('#')) {
+    return true
+  }
+  
+  return false
+}
+
 const handleScroll = () => {
   scrolled.value = window.scrollY > 200
 }
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  // Also listen for hash changes to update active state
+  window.addEventListener('hashchange', () => {
+    // Force component to update
+    isMenuOpen.value = isMenuOpen.value
+  })
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('hashchange', () => {})
 })
 
 </script>
@@ -125,7 +168,11 @@ onUnmounted(() => {
 }
 
 .nav-link:hover::after,
-.router-link-active::after {
+.nav-link.is-active::after {
   width: 100%;
+}
+
+.text-accent-color {
+  color: var(--accent-color);
 }
 </style>
