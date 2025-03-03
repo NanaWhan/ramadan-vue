@@ -37,7 +37,6 @@ import { ref } from 'vue'
 import news1Image from '../../assets/images/news1.jpg'
 import news2Image from '../../assets/images/news2.jpg'
 import news3Image from '../../assets/images/news3.jpg'
-import placeholderImage from '../../assets/images/placeholder.jpg'
 
 interface NewsItem {
   title: string

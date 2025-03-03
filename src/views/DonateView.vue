@@ -172,7 +172,7 @@
               <div class="flex items-center mb-4">
                 <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
                   <img
-                    :src="testimonial1"
+                    src=""
                     alt="Testimonial"
                     class="w-full h-full object-cover"
                   />
@@ -194,7 +194,7 @@
               <div class="flex items-center mb-4">
                 <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
                   <img
-                    :src="testimonial2"
+                    src=""
                     alt="Testimonial"
                     class="w-full h-full object-cover"
                   />
@@ -276,8 +276,6 @@ import { ref } from "vue";
 import Button from "@/components/shared/Button.vue";
 import DonationCounter from "@/components/home/DonationCounter.vue";
 import DonationModal from "@/components/shared/DonationModal.vue";
-import testimonial1 from "@/assets/images/testimonial1.jpg";
-import testimonial2 from "@/assets/images/testimonial2.jpg";
 
 // Donation counter reference
 const donationCounterRef = ref<InstanceType<typeof DonationCounter> | null>(
