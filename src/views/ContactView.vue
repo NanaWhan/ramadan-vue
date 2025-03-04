@@ -1,11 +1,19 @@
 <template>
   <div class="contact-view">
     <!-- Page Header -->
-    <section class="relative py-20 bg-accent-color/10">
-      <div class="container mx-auto px-4">
+    <section class="relative py-20 text-white">
+      <!-- Background image with overlay -->
+      <div class="absolute inset-0 bg-dark-color/60 z-0"></div>
+      <img 
+        :src="bannerImage" 
+        class="absolute inset-0 object-cover w-full h-full z-[-1]"
+        alt="Banner" 
+      />
+      
+      <div class="container mx-auto px-4 relative z-10">
         <div class="max-w-3xl mx-auto text-center">
           <h1 class="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
-          <p class="text-lg text-gray-600">
+          <p class="text-lg text-white">
             Get in touch with our team for any questions or inquiries
           </p>
         </div>
@@ -132,7 +140,7 @@
           <div class="bg-gray-300 h-96 rounded-lg">
             <!-- Placeholder for map - you can integrate Google Maps here -->
             <div class="w-full h-full flex items-center justify-center">
-              <span class="text-gray-600">Interactive map will be displayed here</span>
+              <span class="text-gray-600">Map</span>
             </div>
           </div>
         </div>
@@ -179,6 +187,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import bannerImage from '../assets/images/banner.jpg'
 
 // Contact form
 interface ContactFormData {
