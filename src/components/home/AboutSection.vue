@@ -40,7 +40,7 @@ const teamMembers = ref<TeamMember[]>([
     name: 'Minkaila Odonkor',
     role: 'Project Coordinator',
     organization: 'Operations Manager at Exeleos Ltd',
-    image: 'minkaila.jpg'
+    image: 'minkaila2.jpg'
   },
   {
     name: 'Abdul-Jeleel Mohammed',
@@ -52,19 +52,19 @@ const teamMembers = ref<TeamMember[]>([
     name: 'Hudu Odonkor',
     role: 'Finance & Fundraising Manager',
     organization: 'HuudAutos Ltd',
-    image: 'hudu.jpg'
+    image: 'hudu2.jpg'
   },
   {
     name: 'Samira Abdul',
     role: 'Media & Communications Lead',
     organization: 'Journalist at GTV',
-    image: 'samira.jpg'
+    image: 'nafisa2.jpg'
   },
   {
     name: 'Nafisa Labaran',
     role: 'Monitoring & Evaluation',
     organization: 'Quality Control Officer at Promosideur Ltd',
-    image: 'nafisa.jpg'
+    image: 'nafisa2.jpg'
   }
 ])
 </script>
