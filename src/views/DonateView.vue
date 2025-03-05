@@ -1,295 +1,344 @@
 <template>
   <div class="donate-view">
-    <!-- Page Header -->
-    <section class="relative py-20 text-white">
-      <!-- Background image with overlay -->
-      <div class="absolute inset-0 bg-dark-color/60 z-0"></div>
-      <img 
-        :src="bannerImage" 
-        class="absolute inset-0 object-cover w-full h-full z-[-1]"
-        alt="Banner" 
+    <!-- Donation Confirmation (shows only after successful donation) -->
+    <div v-if="showConfirmation">
+      <DonationConfirmation
+        :transaction-id="lastDonation.transactionId"
+        :amount="lastDonation.amount"
+        :date="lastDonation.date"
+        :payment-method="lastDonation.method"
       />
-      
-      <div class="container mx-auto px-4 relative z-10">
-        <div class="max-w-3xl mx-auto text-center">
-          <h1 class="text-4xl md:text-5xl font-bold mb-4">Donate</h1>
-          <p class="text-lg text-white">
-            Your contribution can make a real difference in someone's life this
-            Ramadan
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Donation Impact Section -->
-    <section class="py-16">
-      <div class="container mx-auto px-4">
-        <div class="max-w-3xl mx-auto">
-          <h2 class="text-3xl font-bold mb-6 text-center">Your Impact</h2>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-              <div class="text-accent-color text-4xl font-bold mb-2">
-                GHS 50
-              </div>
-              <p class="text-gray-600">Provides a day's meal for one person</p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-              <div class="text-accent-color text-4xl font-bold mb-2">
-                GHS 1,500
-              </div>
-              <p class="text-gray-600">Feeds one person for the entire month</p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-              <div class="text-accent-color text-4xl font-bold mb-2">
-                GHS 3,000
-              </div>
-              <p class="text-gray-600">
-                Provides for a family of four for the month
-              </p>
-            </div>
-          </div>
-
-          <p class="text-gray-600 mb-8 text-center">
-            Every donation, no matter the size, brings us closer to our goal of
-            supporting 10,000 people this Ramadan. Your generosity can help
-            provide essential food packages, organize community iftars, and
-            ensure that no one goes hungry during this holy month.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Donation Counter -->
-    <DonationCounter ref="donationCounterRef" />
-
-    <!-- Donation Options Section -->
-    <section class="py-16 bg-gray-100">
-      <div class="container mx-auto px-4">
-        <div class="max-w-3xl mx-auto">
-          <h2 class="text-3xl font-bold mb-10 text-center">How to Donate</h2>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <div
-              v-for="(option, index) in donationOptions"
-              :key="option.title"
-              class="bg-white rounded-lg shadow-md p-6"
-            >
-              <h3 class="text-xl font-bold mb-4">{{ option.title }}</h3>
-              <p class="text-gray-600 mb-6">{{ option.description }}</p>
-              <Button
-                variant="primary"
-                @click="openDonationModal(option.method)"
-              >
-                {{ option.buttonText }}
-              </Button>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h3 class="text-xl font-bold mb-4">Custom Donation</h3>
-
-            <div class="mb-6">
-              <label class="block text-gray-700 mb-2"
-                >Donation Amount (GHS)</label
-              >
-              <input
-                v-model="customAmount"
-                type="number"
-                min="10"
-                class="w-full border rounded-lg p-3"
-                placeholder="Enter amount"
-              />
-            </div>
-
-            <Button
-              variant="primary"
-              :disabled="customAmount < 10"
-              @click="openDonationModal('mobile-money', customAmount)"
-            >
-              Donate Now
-            </Button>
-          </div>
-
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-xl font-bold mb-4">Corporate Donations</h3>
-            <p class="text-gray-600 mb-4">
-              We welcome corporate donations and sponsorships. For more
-              information on how your organization can partner with the Ramadan
-              Relief Project, please contact our team.
+    </div>
+    
+    <!-- Regular donation page -->
+    <div v-else>
+      <!-- Page Header -->
+      <section class="relative py-20 text-white">
+        <!-- Background image with overlay -->
+        <div class="absolute inset-0 bg-dark-color/60 z-0"></div>
+        <img 
+          :src="bannerImage" 
+          class="absolute inset-0 object-cover w-full h-full z-[-1]"
+          alt="Banner" 
+        />
+        
+        <div class="container mx-auto px-4 relative z-10">
+          <div class="max-w-3xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Donate</h1>
+            <p class="text-lg text-white">
+              Your contribution can make a real difference in someone's life this
+              Ramadan
             </p>
-            <div class="flex items-center mb-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 text-accent-color mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-              <a
-                href="mailto:corporate@ramadanreliefghana.org"
-                class="text-accent-color hover:underline"
-              >
-                corporate@ramadanreliefghana.org
-              </a>
-            </div>
-            <div class="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 text-accent-color mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                />
-              </svg>
-              <a
-                href="tel:+233249058729"
-                class="text-accent-color hover:underline"
-              >
-                +233 249 058 729
-              </a>
-            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Testimonials Section -->
-    <section class="py-16">
-      <div class="container mx-auto px-4">
-        <div class="max-w-3xl mx-auto">
-          <h2 class="text-3xl font-bold mb-10 text-center">Testimonials</h2>
+      <!-- Donation Impact Section -->
+      <section class="py-16">
+        <div class="container mx-auto px-4">
+          <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold mb-6 text-center">Your Impact</h2>
 
-          <div class="grid grid-cols-1 gap-8">
-            <div class="bg-white rounded-lg shadow-md p-8">
-              <div class="flex items-center mb-4">
-                <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
-                  <img
-                    src=""
-                    alt="Testimonial"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h4 class="text-lg font-bold">Fatima Ibrahim</h4>
-                  <p class="text-gray-600">Community Member</p>
-                </div>
-              </div>
-              <p class="text-gray-600 italic">
-                "The food package I received from the Ramadan Relief Project
-                made a huge difference for my family. As a single mother of
-                three, it helped me provide for my children during Ramadan. I am
-                truly grateful for their support."
-              </p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-md p-8">
-              <div class="flex items-center mb-4">
-                <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
-                  <img
-                    src=""
-                    alt="Testimonial"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h4 class="text-lg font-bold">Mohammed Alhassan</h4>
-                  <p class="text-gray-600">Regular Donor</p>
-                </div>
-              </div>
-              <p class="text-gray-600 italic">
-                "I've been donating to the Ramadan Relief Project for the past
-                three years, and I'm always impressed by their transparency and
-                the impact they make. Knowing that my contributions are helping
-                those in need during Ramadan gives me great satisfaction."
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section class="py-16 bg-gray-100">
-      <div class="container mx-auto px-4">
-        <div class="max-w-3xl mx-auto">
-          <h2 class="text-3xl font-bold mb-10 text-center">
-            Frequently Asked Questions
-          </h2>
-
-          <div class="space-y-4">
-            <div
-              v-for="(faq, index) in faqs"
-              :key="index"
-              class="bg-white rounded-lg shadow-md overflow-hidden"
-            >
-              <button
-                class="w-full text-left p-4 font-bold flex items-center justify-between"
-                @click="toggleFaq(index)"
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              <div 
+                v-for="(card, index) in impactCards" 
+                :key="card.title"
+                class="bg-white rounded-lg shadow-md p-6 text-center transition-all duration-300 transform hover:shadow-lg hover:-translate-y-1"
+                :class="{'border-2 border-accent-color': selectedAmount === card.amount}"
+                @click="selectAmount(card.amount)"
               >
-                {{ faq.question }}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 transition-transform"
-                  :class="{ 'transform rotate-180': faq.open }"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                <div class="text-accent-color text-4xl font-bold mb-2">
+                  GHS {{ formatNumber(card.amount) }}
+                </div>
+                <p class="text-gray-600 mb-4">{{ card.description }}</p>
+                <button 
+                  class="inline-block bg-accent-color text-dark-color rounded-full px-6 py-2 font-bold hover:bg-yellow-600 transition-colors"
+                  @click.stop="openDonationModal(card.amount)"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 9l-7 7-7-7"
+                  Donate
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+              <h3 class="text-xl font-bold mb-4">Custom Donation</h3>
+
+              <div class="mb-6">
+                <label class="block text-gray-700 mb-2"
+                  >Donation Amount (GHS)</label
+                >
+                <div class="flex items-center">
+                  <input
+                    v-model="customAmount"
+                    type="number"
+                    min="10"
+                    step="10"
+                    class="flex-1 border rounded-lg p-3"
+                    placeholder="Enter amount"
                   />
-                </svg>
+                  <button
+                    class="ml-4 bg-accent-color text-dark-color font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition-colors"
+                    :disabled="customAmount < 10"
+                    :class="{'opacity-50 cursor-not-allowed': customAmount < 10}"
+                    @click="openDonationModal(customAmount)"
+                  >
+                    Donate Now
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+              <h3 class="text-xl font-bold mb-4">Donate Monthly</h3>
+              <p class="text-gray-600 mb-4">
+                Setup a recurring monthly donation to provide consistent support throughout the year.
+              </p>
+              <button 
+                class="bg-accent-color text-dark-color font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition-colors"
+                @click="openDonationModal(selectedAmount, true)"
+              >
+                Set Up Monthly Donation
               </button>
-              <div class="p-4 pt-0 border-t" v-show="faq.open">
-                <p class="text-gray-600">{{ faq.answer }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Donation Counter -->
+      <DonationCounter ref="donationCounterRef" />
+
+     <!-- Donation Options Section -->
+      <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+          <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold mb-10 text-center">How to Donate</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              <div
+                v-for="(option, index) in donationOptions"
+                :key="option.title"
+                class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-300"
+              >
+                <div class="w-12 h-12 rounded-full bg-accent-color/10 flex items-center justify-center mb-4">
+                  <component :is="option.icon" class="h-6 w-6 text-accent-color" />
+                </div>
+                <h3 class="text-xl font-bold mb-4">{{ option.title }}</h3>
+                <p class="text-gray-600 mb-6">{{ option.description }}</p>
+                <button
+                  class="inline-block bg-accent-color text-dark-color rounded-full px-6 py-2 font-bold hover:bg-yellow-600 transition-colors"
+                  @click="openDonationModal(selectedAmount, false, option.method)"
+                >
+                  {{ option.buttonText }}
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+              <h3 class="text-xl font-bold mb-4">Corporate Donations</h3>
+              <p class="text-gray-600 mb-4">
+                We welcome corporate donations and sponsorships. For more
+                information on how your organization can partner with the Ramadan
+                Relief Project, please contact our team.
+              </p>
+              <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6">
+                <div class="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-accent-color mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                  
+                  <a
+                    href="mailto:corporate@ramadanreliefghana.org"
+                    class="text-accent-color hover:underline"
+                  >
+                    corporate@ramadanreliefghana.org
+                  </a>
+                </div>
+                <div class="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-accent-color mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
+                  </svg>
+                  <a
+                    href="tel:+233249058729"
+                    class="text-accent-color hover:underline"
+                  >
+                  >
+                    +233 249 058 729
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Donation Modal -->
-    <DonationModal
+      <!-- Testimonials Section -->
+      <section class="py-16">
+        <div class="container mx-auto px-4">
+          <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold mb-10 text-center">Testimonials</h2>
+
+            <div class="grid grid-cols-1 gap-8">
+              <div class="bg-white rounded-lg shadow-md p-8">
+                <div class="flex items-center mb-4">
+                  <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
+                    <img
+                      :src="testimonialsImage1"
+                      alt="Testimonial"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold">Fatima Ibrahim</h4>
+                    <p class="text-gray-600">Community Member</p>
+                  </div>
+                </div>
+                <p class="text-gray-600 italic">
+                  "The food package I received from the Ramadan Relief Project
+                  made a huge difference for my family. As a single mother of
+                  three, it helped me provide for my children during Ramadan. I am
+                  truly grateful for their support."
+                </p>
+              </div>
+
+              <div class="bg-white rounded-lg shadow-md p-8">
+                <div class="flex items-center mb-4">
+                  <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
+                    <img
+                      :src="testimonialsImage2"
+                      alt="Testimonial"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold">Mohammed Alhassan</h4>
+                    <p class="text-gray-600">Regular Donor</p>
+                  </div>
+                </div>
+                <p class="text-gray-600 italic">
+                  "I've been donating to the Ramadan Relief Project for the past
+                  three years, and I'm always impressed by their transparency and
+                  the impact they make. Knowing that my contributions are helping
+                  those in need during Ramadan gives me great satisfaction."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+          <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold mb-10 text-center">
+              Frequently Asked Questions
+            </h2>
+
+            <div class="space-y-4">
+              <div
+                v-for="(faq, index) in faqs"
+                :key="index"
+                class="bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                <button
+                  class="w-full text-left p-4 font-bold flex items-center justify-between"
+                  @click="toggleFaq(index)"
+                >
+                  {{ faq.question }}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 transition-transform"
+                    :class="{ 'transform rotate-180': faq.open }"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                <div class="p-4 pt-0 border-t" v-show="faq.open">
+                  <p class="text-gray-600">{{ faq.answer }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Enhanced Donation Modal -->
+    <EnhancedDonationModal
       v-if="showDonationModal"
       :amount="donationAmount"
       :initial-tab="activePaymentMethod"
       @close="showDonationModal = false"
-      @donate="processDonation"
+      @donate-complete="handleDonationComplete"
+      @view-receipts="showConfirmation = true"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import Button from "@/components/shared/Button.vue";
+import { ref, onMounted } from "vue";
+import DonationService from "@/services/donationService";
 import DonationCounter from "@/components/home/DonationCounter.vue";
-import DonationModal from "@/components/shared/DonationModal.vue";
+import EnhancedDonationModal from "@/components/shared/EnhancedDonationModal.vue";
+import DonationConfirmation from "@/components/shared/DonationConfirmation.vue";
+import MobileIcon from "../components/icons/MobileIcon.vue";
+import CardIcon from "../components/icons/CardIcon.vue";
+import BankIcon from "../components/icons/BankIcon.vue";
 import bannerImage from '../assets/images/banner.jpg';
+import testimonialsImage1 from '../assets/images/testimonial1.jpg';
+import testimonialsImage2 from '../assets/images/testimonial2.jpg';
 
 // Donation counter reference
-const donationCounterRef = ref<InstanceType<typeof DonationCounter> | null>(
-  null
-);
+const donationCounterRef = ref<InstanceType<typeof DonationCounter> | null>(null);
+
+// Impact cards
+const impactCards = [
+  {
+    amount: 50,
+    description: "Provides a day's meal for one person",
+    title: "Daily Meal"
+  },
+  {
+    amount: 1500,
+    description: "Feeds one person for the entire month",
+    title: "Monthly Package"
+  },
+  {
+    amount: 3000,
+    description: "Provides for a family of four for the month",
+    title: "Family Package"
+  },
+];
 
 // Donation options
 const donationOptions = [
@@ -299,6 +348,7 @@ const donationOptions = [
       "Make a quick and secure donation using MTN Mobile Money, Telecel Cash, or AirtelTigo Money.",
     buttonText: "Donate via Mobile Money",
     method: "mobile-money",
+    icon: MobileIcon  // Use the component reference, not a string
   },
   {
     title: "Bank Transfer",
@@ -306,6 +356,7 @@ const donationOptions = [
       "Make a direct bank transfer to our account. Ideal for larger donations.",
     buttonText: "Donate via Bank Transfer",
     method: "bank-transfer",
+    icon: BankIcon  // Use the component reference, not a string
   },
   {
     title: "Card Payment",
@@ -313,16 +364,25 @@ const donationOptions = [
       "Use your debit or credit card to make a secure online donation.",
     buttonText: "Donate via Card",
     method: "card-payment",
+    icon: CardIcon  // Use the component reference, not a string
   },
 ];
 
 // Custom donation
 const customAmount = ref(100);
+const selectedAmount = ref(1500); // Default selected amount
 
 // Donation modal
 const showDonationModal = ref(false);
 const activePaymentMethod = ref("");
-const donationAmount = ref(1000);
+const donationAmount = ref(1500);
+const showConfirmation = ref(false);
+const lastDonation = ref({
+  transactionId: '',
+  amount: 0,
+  date: new Date(),
+  method: ''
+});
 
 // FAQs
 const faqs = ref([
@@ -363,32 +423,74 @@ const toggleFaq = (index: number) => {
   faqs.value[index].open = !faqs.value[index].open;
 };
 
+// Format number with commas
+const formatNumber = (num: number): string => {
+  return num.toLocaleString();
+};
+
+// Select donation amount
+const selectAmount = (amount: number) => {
+  selectedAmount.value = amount;
+};
+
 // Open donation modal
-const openDonationModal = (method: string, amount: number = 1000) => {
+const openDonationModal = (amount: number, isRecurring = false, method = '') => {
   donationAmount.value = amount;
   activePaymentMethod.value = method;
   showDonationModal.value = true;
 };
 
-// Process donation
-const processDonation = (method: string, details: any) => {
-  // Process donation (you would typically call an API here)
-  console.log(
-    `Processing ${method} donation for GHS ${donationAmount.value}`,
-    details
-  );
-
-  // Update donation counter
+// Handle donation completion
+const handleDonationComplete = (transactionId: string) => {
+  // Get the last donation from the service
+  const donationHistory = DonationService.getDonationHistory();
+  if (donationHistory.value.length > 0) {
+    const donation = donationHistory.value[donationHistory.value.length - 1];
+    lastDonation.value = {
+      transactionId: donation.transactionId,
+      amount: donation.amount,
+      date: donation.date,
+      method: getPaymentMethodName(donation.method)
+    };
+  }
+  
+  // Update the donation counter
   if (donationCounterRef.value) {
     donationCounterRef.value.makeDonation(donationAmount.value);
   }
-
-  // Close modal
+  
+  // Reset state and show confirmation
   showDonationModal.value = false;
-
-  // Show success message
-  alert(`Thank you for your donation of GHS ${donationAmount.value}!`);
+  showConfirmation.value = true;
 };
+
+// Get payment method display name
+const getPaymentMethodName = (methodId: string): string => {
+  const method = donationOptions.find(m => m.method === methodId);
+  return method ? method.title : 'Online Payment';
+};
+
+// Reset state when navigating back to this page
+onMounted(() => {
+  // Check if there's a transaction_id in the URL (for when returning from external payment)
+  const urlParams = new URLSearchParams(window.location.search);
+  const transactionId = urlParams.get('transaction_id');
+  
+  if (transactionId) {
+    lastDonation.value = {
+      transactionId,
+      amount: Number(urlParams.get('amount') || 0),
+      date: new Date(),
+      method: 'Online Payment'
+    };
+    showConfirmation.value = true;
+    
+    // Clean up URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  } else {
+    showConfirmation.value = false;
+  }
+});
 </script>
 
 <style scoped>
