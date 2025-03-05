@@ -7,7 +7,7 @@
       
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
         <div 
-          v-for="index in 8" 
+          v-for="index in 4" 
           :key="index"
           class="flex items-center justify-center h-20 md:h-24"
         >
