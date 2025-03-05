@@ -232,12 +232,6 @@ const teamMembers = ref<TeamMember[]>([
     role: 'Monitoring & Evaluation',
     organization: 'Quality Control Officer at Promosideur Ltd',
     image: 'nafisa.jpg'
-  },
-  {
-    name: 'Ahmed Rahmani',
-    role: 'Community Outreach Coordinator',
-    organization: 'Social Worker',
-    image: 'placeholder.jpg'
   }
 ])
 </script>

@@ -5,6 +5,8 @@
     <AboutSection />
     <ImpactStats />
     <GetInvolved />
+    <VolunteerSection />
+    <PartnerSection />
     <EidEvent />
     <ResourcesSection />
     <NewsUpdates />
@@ -20,6 +22,8 @@ import DonationCounter from '@/components/home/DonationCounter.vue'
 import AboutSection from '@/components/home/AboutSection.vue'
 import ImpactStats from '@/components/home/ImpactStats.vue'
 import GetInvolved from '@/components/home/GetInvolved.vue'
+import VolunteerSection from '@/components/home/VolunteerSection.vue'
+import PartnerSection from '@/components/home/PartnerSection.vue'
 import EidEvent from '@/components/home/EidEvent.vue'
 import ResourcesSection from '@/components/home/ResourcesSection.vue'
 import NewsUpdates from '@/components/home/NewsUpdates.vue'

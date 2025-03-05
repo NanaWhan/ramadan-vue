@@ -5,6 +5,7 @@
       <RouterView />
     </main>
     <TheFooter />
+    <ScrollToTop /> <!-- Added ScrollToTop component -->
   </div>
 </template>
 
@@ -12,10 +13,10 @@
 import { RouterView } from 'vue-router'
 import TheHeader from '@/components/layout/TheHeader.vue'
 import TheFooter from '@/components/layout/TheFooter.vue'
+import ScrollToTop from '@/components/shared/ScrollToTop.vue' // Import ScrollToTop
 </script>
 
 <style>
-
 /* Base styles that will apply site-wide */
 :root {
   --accent-color: #F4BE37;

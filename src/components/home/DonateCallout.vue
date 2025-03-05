@@ -34,7 +34,9 @@
             <div class="text-4xl font-bold text-accent-color mb-2">
               GHS 3,000
             </div>
-            <p class="text-gray-200 mb-4">Can feed a family for the entire month.</p>
+            <p class="text-gray-200 mb-4">
+              Can feed a family for the entire month.
+            </p>
 
             <div class="flex flex-col md:flex-row justify-center gap-4">
               <Button
@@ -113,10 +115,10 @@
 
           <p class="text-sm text-gray-300">
             Need a different amount?
-            <a
-              href="/donate"
+            <RouterLink
+              to="/donate"
               class="text-accent-color underline hover:text-yellow-400"
-              >Visit our donation page</a
+              >Visit our donation page</RouterLink
             >
             for more options.
           </p>
@@ -137,6 +139,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { RouterLink } from "vue-router"; // Add this import
 import Button from "@/components/shared/Button.vue";
 import DonationModal from "@/components/shared/DonationModal.vue";
 import bannerImage from "../../assets/images/banner.jpg";

@@ -5,11 +5,12 @@
         <h3 class="text-2xl font-bold mb-4">Our Partners & Sponsors</h3>
       </div>
       
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- Replace the grid with closer spacing -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 max-w-4xl mx-auto">
         <div 
           v-for="index in 4" 
           :key="index"
-          class="flex items-center justify-center h-20 md:h-24"
+          class="flex items-center justify-center h-20 md:h-24 p-2"
         >
           <img 
             :src="getPartnerLogoUrl(index)" 

@@ -3,77 +3,49 @@
     <div class="container mx-auto px-4">
       <h2 class="text-4xl font-bold text-center mb-16">Get Involved</h2>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <!-- Donation Options -->
-        <div>
-          <h3 class="text-2xl font-bold mb-8">Donate Today</h3>
-          
-          <div class="space-y-8">
-            <div v-for="option in donationOptions" :key="option.title" class="mb-8">
-              <h4 class="text-xl font-bold mb-2">{{ option.title }}</h4>
-              <p class="text-gray-600 mb-3">{{ option.price }}</p>
-              <button 
-                class="bg-yellow-500 hover:bg-yellow-600 text-dark-color rounded-full px-6 py-2 font-bold transition-colors"
-                @click="openDonationModal(option.amount)"
-              >
-                Donate
-              </button>
-            </div>
+      <!-- Donation Options - Full Width -->
+      <div class="max-w-3xl mx-auto">
+        <h3 class="text-2xl font-bold mb-8 text-center">Donate Today</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <div 
+            v-for="option in donationOptions" 
+            :key="option.title"
+            class="bg-white rounded-lg shadow-md p-6 text-center transition-all duration-300 hover:shadow-lg"
+          >
+            <h4 class="text-xl font-bold mb-2">{{ option.title }}</h4>
+            <p class="text-gray-600 mb-4">{{ option.price }}</p>
+            <button 
+              class="bg-yellow-500 hover:bg-yellow-600 text-dark-color rounded-full px-6 py-2 font-bold transition-colors"
+              @click="openDonationModal(option.amount)"
+            >
+              Donate
+            </button>
           </div>
         </div>
         
-        <!-- Volunteer Form -->
-        <div>
-          <h3 class="text-2xl font-bold mb-8">Volunteer With Us</h3>
+        <!-- Other Ways to Get Involved -->
+        <div class="bg-gray-100 rounded-lg p-8 text-center">
+          <h3 class="text-2xl font-bold mb-4">Other Ways to Help</h3>
+          <p class="text-gray-600 mb-6">
+            Besides donations and volunteering, there are many other ways you can support our mission:
+          </p>
           
-          <form @submit.prevent="submitVolunteerForm" class="space-y-4">
-            <div>
-              <input
-                v-model="volunteerForm.name"
-                type="text"
-                class="w-full bg-gray-100 border-0 rounded-lg p-3"
-                placeholder="Your Name"
-                required
-              />
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+              <h4 class="font-bold text-lg mb-2">Spread the Word</h4>
+              <p class="text-gray-600">
+                Share our mission with your friends, family, and on social media to raise awareness.
+              </p>
             </div>
             
-            <div>
-              <input
-                v-model="volunteerForm.email"
-                type="email"
-                class="w-full bg-gray-100 border-0 rounded-lg p-3"
-                placeholder="Your Email"
-                required
-              />
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+              <h4 class="font-bold text-lg mb-2">Organize a Fundraiser</h4>
+              <p class="text-gray-600">
+                Host your own fundraising event to support our Ramadan Relief Project.
+              </p>
             </div>
-            
-            <div>
-              <input
-                v-model="volunteerForm.phone"
-                type="tel"
-                class="w-full bg-gray-100 border-0 rounded-lg p-3"
-                placeholder="Your Phone"
-                required
-              />
-            </div>
-            
-            <div>
-              <textarea
-                v-model="volunteerForm.message"
-                class="w-full bg-gray-100 border-0 rounded-lg p-3"
-                rows="4"
-                placeholder="How would you like to help?"
-                required
-              ></textarea>
-            </div>
-            
-            <button 
-              type="submit" 
-              class="bg-yellow-500 hover:bg-yellow-600 text-dark-color rounded-full px-6 py-2 font-bold transition-colors"
-            >
-              Sign Up to Volunteer
-            </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>
@@ -117,21 +89,6 @@ const donationOptions = ref<DonationOption[]>([
   }
 ])
 
-// Volunteer form
-interface VolunteerFormData {
-  name: string
-  email: string
-  phone: string
-  message: string
-}
-
-const volunteerForm = ref<VolunteerFormData>({
-  name: '',
-  email: '',
-  phone: '',
-  message: ''
-})
-
 // Donation modal
 const showDonationModal = ref(false)
 const selectedAmount = ref(0)
@@ -150,22 +107,6 @@ const processDonation = (method: string, details: any) => {
   
   // Show success message
   alert(`Thank you for your donation of GHS ${selectedAmount.value}!`)
-}
-
-const submitVolunteerForm = () => {
-  // Process volunteer form submission (you would typically call an API here)
-  console.log('Volunteer form submitted:', volunteerForm.value)
-  
-  // Show success message
-  alert('Thank you for signing up to volunteer! We will contact you soon.')
-  
-  // Reset form
-  volunteerForm.value = {
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
-  }
 }
 </script>
 
