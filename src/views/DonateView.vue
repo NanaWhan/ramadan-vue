@@ -9,25 +9,25 @@
         :payment-method="lastDonation.method"
       />
     </div>
-    
+
     <!-- Regular donation page -->
     <div v-else>
       <!-- Page Header -->
       <section class="relative py-20 text-white">
         <!-- Background image with overlay -->
         <div class="absolute inset-0 bg-dark-color/60 z-0"></div>
-        <img 
-          :src="bannerImage" 
+        <img
+          :src="bannerImage"
           class="absolute inset-0 object-cover w-full h-full z-[-1]"
-          alt="Banner" 
+          alt="Banner"
         />
-        
+
         <div class="container mx-auto px-4 relative z-10">
           <div class="max-w-3xl mx-auto text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Donate</h1>
             <p class="text-lg text-white">
-              Your contribution can make a real difference in someone's life this
-              Ramadan
+              Your contribution can make a real difference in someone's life
+              this Ramadan
             </p>
           </div>
         </div>
@@ -40,18 +40,21 @@
             <h2 class="text-3xl font-bold mb-6 text-center">Your Impact</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              <div 
-                v-for="(card, index) in impactCards" 
+              <div
+                v-for="(card, index) in impactCards"
                 :key="card.title"
                 class="bg-white rounded-lg shadow-md p-6 text-center transition-all duration-300 transform hover:shadow-lg hover:-translate-y-1"
-                :class="{'border-2 border-accent-color': selectedAmount === card.amount}"
+                :class="{
+                  'border-2 border-accent-color':
+                    selectedAmount === card.amount,
+                }"
                 @click="selectAmount(card.amount)"
               >
                 <div class="text-accent-color text-4xl font-bold mb-2">
                   GHS {{ formatNumber(card.amount) }}
                 </div>
                 <p class="text-gray-600 mb-4">{{ card.description }}</p>
-                <button 
+                <button
                   class="inline-block bg-accent-color text-dark-color rounded-full px-6 py-2 font-bold hover:bg-yellow-600 transition-colors"
                   @click.stop="openDonationModal(card.amount)"
                 >
@@ -79,7 +82,9 @@
                   <button
                     class="ml-4 bg-accent-color text-dark-color font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition-colors"
                     :disabled="customAmount < 10"
-                    :class="{'opacity-50 cursor-not-allowed': customAmount < 10}"
+                    :class="{
+                      'opacity-50 cursor-not-allowed': customAmount < 10,
+                    }"
                     @click="openDonationModal(customAmount)"
                   >
                     Donate Now
@@ -88,7 +93,7 @@
               </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-md p-6">
+            <!-- <div class="bg-white rounded-lg shadow-md p-6">
               <h3 class="text-xl font-bold mb-4">Donate Monthly</h3>
               <p class="text-gray-600 mb-4">
                 Setup a recurring monthly donation to provide consistent support throughout the year.
@@ -99,7 +104,7 @@
               >
                 Set Up Monthly Donation
               </button>
-            </div>
+            </div> -->
           </div>
         </div>
       </section>
@@ -107,7 +112,7 @@
       <!-- Donation Counter -->
       <DonationCounter ref="donationCounterRef" />
 
-     <!-- Donation Options Section -->
+      <!-- Donation Options Section -->
       <section class="py-16 bg-gray-100">
         <div class="container mx-auto px-4">
           <div class="max-w-3xl mx-auto">
@@ -119,14 +124,19 @@
                 :key="option.title"
                 class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-300"
               >
-                <div class="w-12 h-12 rounded-full bg-accent-color/10 flex items-center justify-center mb-4">
-                  <component :is="option.icon" class="h-6 w-6 text-accent-color" />
+                <div
+                  class="w-12 h-12 rounded-full bg-accent-color/10 flex items-center justify-center mb-4"
+                >
+                  <component
+                    :is="option.icon"
+                    class="h-6 w-6 text-accent-color"
+                  />
                 </div>
                 <h3 class="text-xl font-bold mb-4">{{ option.title }}</h3>
                 <p class="text-gray-600 mb-6">{{ option.description }}</p>
                 <button
                   class="inline-block bg-accent-color text-dark-color rounded-full px-6 py-2 font-bold hover:bg-yellow-600 transition-colors"
-                  @click="openDonationModal(selectedAmount, false, option.method)"
+                  @click="openDonationModal(selectedAmount, option.method)"
                 >
                   {{ option.buttonText }}
                 </button>
@@ -137,10 +147,12 @@
               <h3 class="text-xl font-bold mb-4">Corporate Donations</h3>
               <p class="text-gray-600 mb-4">
                 We welcome corporate donations and sponsorships. For more
-                information on how your organization can partner with the Ramadan
-                Relief Project, please contact our team.
+                information on how your organization can partner with the
+                Ramadan Relief Project, please contact our team.
               </p>
-              <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6">
+              <div
+                class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6"
+              >
                 <div class="flex items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +168,7 @@
                       d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                     />
                   </svg>
-                  
+
                   <a
                     href="mailto:corporate@ramadanreliefghana.org"
                     class="text-accent-color hover:underline"
@@ -183,8 +195,7 @@
                     href="tel:+233249058729"
                     class="text-accent-color hover:underline"
                   >
-                  >
-                    +233 249 058 729
+                    > +233 249 058 729
                   </a>
                 </div>
               </div>
@@ -217,8 +228,8 @@
                 <p class="text-gray-600 italic">
                   "The food package I received from the Ramadan Relief Project
                   made a huge difference for my family. As a single mother of
-                  three, it helped me provide for my children during Ramadan. I am
-                  truly grateful for their support."
+                  three, it helped me provide for my children during Ramadan. I
+                  am truly grateful for their support."
                 </p>
               </div>
 
@@ -238,9 +249,10 @@
                 </div>
                 <p class="text-gray-600 italic">
                   "I've been donating to the Ramadan Relief Project for the past
-                  three years, and I'm always impressed by their transparency and
-                  the impact they make. Knowing that my contributions are helping
-                  those in need during Ramadan gives me great satisfaction."
+                  three years, and I'm always impressed by their transparency
+                  and the impact they make. Knowing that my contributions are
+                  helping those in need during Ramadan gives me great
+                  satisfaction."
                 </p>
               </div>
             </div>
@@ -314,29 +326,31 @@ import DonationConfirmation from "@/components/shared/DonationConfirmation.vue";
 import MobileIcon from "../components/icons/MobileIcon.vue";
 import CardIcon from "../components/icons/CardIcon.vue";
 import BankIcon from "../components/icons/BankIcon.vue";
-import bannerImage from '../assets/images/banner.jpg';
-import testimonialsImage1 from '../assets/images/testimonial1.jpg';
-import testimonialsImage2 from '../assets/images/testimonial2.jpg';
+import bannerImage from "../assets/images/banner.jpg";
+import testimonialsImage1 from "../assets/images/testimonial1.jpg";
+import testimonialsImage2 from "../assets/images/testimonial2.jpg";
 
 // Donation counter reference
-const donationCounterRef = ref<InstanceType<typeof DonationCounter> | null>(null);
+const donationCounterRef = ref<InstanceType<typeof DonationCounter> | null>(
+  null
+);
 
 // Impact cards
 const impactCards = [
   {
     amount: 50,
     description: "Provides a day's meal for one person",
-    title: "Daily Meal"
+    title: "Daily Meal",
   },
   {
     amount: 1500,
     description: "Feeds one person for the entire month",
-    title: "Monthly Package"
+    title: "Monthly Package",
   },
   {
     amount: 3000,
     description: "Provides for a family of four for the month",
-    title: "Family Package"
+    title: "Family Package",
   },
 ];
 
@@ -348,7 +362,7 @@ const donationOptions = [
       "Make a quick and secure donation using MTN Mobile Money, Telecel Cash, or AirtelTigo Money.",
     buttonText: "Donate via Mobile Money",
     method: "mobile-money",
-    icon: MobileIcon  // Use the component reference, not a string
+    icon: MobileIcon, // Use the component reference, not a string
   },
   {
     title: "Bank Transfer",
@@ -356,7 +370,7 @@ const donationOptions = [
       "Make a direct bank transfer to our account. Ideal for larger donations.",
     buttonText: "Donate via Bank Transfer",
     method: "bank-transfer",
-    icon: BankIcon  // Use the component reference, not a string
+    icon: BankIcon, // Use the component reference, not a string
   },
   {
     title: "Card Payment",
@@ -364,7 +378,7 @@ const donationOptions = [
       "Use your debit or credit card to make a secure online donation.",
     buttonText: "Donate via Card",
     method: "card-payment",
-    icon: CardIcon  // Use the component reference, not a string
+    icon: CardIcon, // Use the component reference, not a string
   },
 ];
 
@@ -378,10 +392,10 @@ const activePaymentMethod = ref("");
 const donationAmount = ref(1500);
 const showConfirmation = ref(false);
 const lastDonation = ref({
-  transactionId: '',
+  transactionId: "",
   amount: 0,
   date: new Date(),
-  method: ''
+  method: "",
 });
 
 // FAQs
@@ -411,9 +425,9 @@ const faqs = ref([
     open: false,
   },
   {
-    question: "Can I set up a recurring donation?",
+    question: "Can I donate more than once?",
     answer:
-      "Yes, you can set up a recurring donation on a monthly or annual basis. This helps us plan our activities more effectively and ensures consistent support for those in need.",
+      "Yes, you can make multiple donations throughout the year. Your continued support helps us plan our activities more effectively and ensures consistent assistance for those in need.",
     open: false,
   },
 ]);
@@ -434,7 +448,7 @@ const selectAmount = (amount: number) => {
 };
 
 // Open donation modal
-const openDonationModal = (amount: number, isRecurring = false, method = '') => {
+const openDonationModal = (amount: number, method = "") => {
   donationAmount.value = amount;
   activePaymentMethod.value = method;
   showDonationModal.value = true;
@@ -450,15 +464,15 @@ const handleDonationComplete = (transactionId: string) => {
       transactionId: donation.transactionId,
       amount: donation.amount,
       date: donation.date,
-      method: getPaymentMethodName(donation.method)
+      method: getPaymentMethodName(donation.method),
     };
   }
-  
+
   // Update the donation counter
   if (donationCounterRef.value) {
     donationCounterRef.value.makeDonation(donationAmount.value);
   }
-  
+
   // Reset state and show confirmation
   showDonationModal.value = false;
   showConfirmation.value = true;
@@ -466,25 +480,25 @@ const handleDonationComplete = (transactionId: string) => {
 
 // Get payment method display name
 const getPaymentMethodName = (methodId: string): string => {
-  const method = donationOptions.find(m => m.method === methodId);
-  return method ? method.title : 'Online Payment';
+  const method = donationOptions.find((m) => m.method === methodId);
+  return method ? method.title : "Online Payment";
 };
 
 // Reset state when navigating back to this page
 onMounted(() => {
   // Check if there's a transaction_id in the URL (for when returning from external payment)
   const urlParams = new URLSearchParams(window.location.search);
-  const transactionId = urlParams.get('transaction_id');
-  
+  const transactionId = urlParams.get("transaction_id");
+
   if (transactionId) {
     lastDonation.value = {
       transactionId,
-      amount: Number(urlParams.get('amount') || 0),
+      amount: Number(urlParams.get("amount") || 0),
       date: new Date(),
-      method: 'Online Payment'
+      method: "Online Payment",
     };
     showConfirmation.value = true;
-    
+
     // Clean up URL
     window.history.replaceState({}, document.title, window.location.pathname);
   } else {
