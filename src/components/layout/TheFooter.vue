@@ -48,10 +48,10 @@
           <form @submit.prevent="subscribeToNewsletter" class="newsletter-form">
             <div class="flex">
               <input
-                v-model="email"
+                v-model="phoneNumber"
                 type="email"
                 class="w-full bg-transparent text-white border border-white px-3 py-2 rounded-l"
-                placeholder="Your email"
+                placeholder="Your phone number"
                 required
               />
               <button
@@ -71,7 +71,7 @@
             &copy; {{ currentYear }} Ramadan Relief Project. All rights
             reserved.
           </p>
-          <p>Designed by ZediTech</p>
+          <p>Designed by <a href="https://devseinty.netlify.app/" class="text-accent-color hover:underline" target="_blank">ZediTech</a></p>
         </div>
       </div>
     </div>
@@ -83,7 +83,7 @@ import { ref, computed } from "vue";
 import { RouterLink } from "vue-router";
 import logoImage from '@/assets/images/logo2.png'
 
-const email = ref("");
+const phoneNumber  = ref("");
 const currentYear = computed(() => new Date().getFullYear());
 
 const quickLinks = [
@@ -102,8 +102,8 @@ const resourceLinks = [
 
 const subscribeToNewsletter = () => {
   // Handle newsletter subscription
-  alert(`Thank you for subscribing with ${email.value}!`);
-  email.value = "";
+  alert(`Thank you for subscribing with ${phoneNumber.value}!`);
+  phoneNumber.value = "";
 };
 </script>
 

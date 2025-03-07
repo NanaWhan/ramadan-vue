@@ -280,7 +280,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import bannerImage from "../assets/images/banner.jpg";
 
 // Contact form
