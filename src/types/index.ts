@@ -49,6 +49,10 @@ export interface VolunteerFormData {
  * Mobile money form data type definition
  */
 export interface MobileMoneyFormData {
+    email: string
+    name: string
+    name: string
+    email: string
     network: string
     phone: string
     amount: number
@@ -58,6 +62,10 @@ export interface MobileMoneyFormData {
  * Card payment form data type definition
  */
 export interface CardPaymentFormData {
+    phone: any
+    email: any
+    email: any
+    phone: any
     number: string
     expiry: string
     cvv: string

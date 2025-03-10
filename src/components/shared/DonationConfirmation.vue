@@ -72,7 +72,7 @@
                 <div>
                   <h4 class="font-medium mb-2">Receipt</h4>
                   <p class="text-gray-600 text-sm">
-                    A copy of this receipt has been emailed to you. If you need assistance, 
+                    A confirmation email has been sent to you. If you need assistance, 
                     please contact us at <a href="mailto:support@ramadanreliefghana.org" class="text-accent-color hover:underline">support@ramadanreliefghana.org</a>
                   </p>
                 </div>

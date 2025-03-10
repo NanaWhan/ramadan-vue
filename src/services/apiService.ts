@@ -21,6 +21,14 @@ export interface CreateDonationRequest {
     campaignSource: string;
 }
 
+export interface DonationResponse {
+    reference: string;
+    paymentLink?: string;
+    status: string;
+    amount: number;
+    currency: string;
+}
+
 export interface DonationStatistics {
     id: number;
     totalDonations: number;
@@ -63,7 +71,7 @@ const ApiService = {
     /**
      * Create a donation and generate a payment link
      */
-    async createDonation(donationData: CreateDonationRequest): Promise<any> {
+    async createDonation(donationData: CreateDonationRequest): Promise<ApiResponse<DonationResponse>> {
         try {
             const response = await fetch(`${API_BASE_URL}/donations/create`, {
                 method: 'POST',
@@ -108,6 +116,57 @@ const ApiService = {
             return data;
         } catch (error) {
             console.error('Error fetching donation statistics:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get donation list
+     */
+    async getDonationList(): Promise<ApiResponse<any[]>> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/donations`, {
+                method: 'GET',
+                headers: {
+                    'Accept': '*/*',
+                },
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to fetch donation list');
+            }
+
+            return data;
+        } catch (error) {
+            console.error('Error fetching donation list:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Recalculate donation statistics
+     */
+    async recalculateDonationStatistics(authToken: string): Promise<ApiResponse<DonationStatistics>> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/donations/statistics/recalculate`, {
+                method: 'POST',
+                headers: {
+                    'Accept': '*/*',
+                    'Authorization': `Bearer ${authToken}`,
+                },
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to recalculate donation statistics');
+            }
+
+            return data;
+        } catch (error) {
+            console.error('Error recalculating donation statistics:', error);
             throw error;
         }
     },

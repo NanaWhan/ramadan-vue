@@ -4,7 +4,7 @@ import AboutView from '../views/AboutView.vue'
 import DonateView from '../views/DonateView.vue'
 import ResourcesView from '../views/ResourcesView.vue'
 import ContactView from '../views/ContactView.vue'
-
+import PaymentCallbackView from '../views/PaymentCallbackView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +23,11 @@ const router = createRouter({
       path: '/donate',
       name: 'donate',
       component: () => import('../views/DonateView.vue')
+    },
+    {
+      path: '/payment/callback',
+      name: 'payment-callback',
+      component: PaymentCallbackView
     },
     {
       path: '/resources',

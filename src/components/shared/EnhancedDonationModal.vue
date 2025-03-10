@@ -47,7 +47,51 @@
 
       <!-- Modal Body -->
       <div class="p-6">
-        <div v-if="activeTabId === 'mobile-money'">
+        <!-- Loading overlay -->
+        <div v-if="isSubmitting" class="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center z-10 rounded-xl">
+          <div class="flex flex-col items-center">
+            <svg class="animate-spin h-10 w-10 text-accent-color mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-dark-color font-medium">Processing donation...</p>
+          </div>
+        </div>
+
+        <!-- Error message -->
+        <div v-if="errorMessage" class="bg-red-50 text-red-700 p-4 rounded-lg mb-4">
+          <p class="font-bold">Error</p>
+          <p>{{ errorMessage }}</p>
+          <button 
+            @click="errorMessage = ''" 
+            class="mt-2 bg-red-700 text-white px-4 py-2 rounded-lg text-sm"
+          >
+            Try Again
+          </button>
+        </div>
+
+        <!-- Success message -->
+        <div v-else-if="successResult" class="bg-green-50 text-green-700 p-4 rounded-lg mb-4">
+          <p class="font-bold">Donation Successful!</p>
+          <p>{{ successMessage }}</p>
+          <div class="flex space-x-3 mt-4">
+            <button 
+              @click="$emit('close')" 
+              class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg text-sm"
+            >
+              Close
+            </button>
+            <button 
+              @click="$emit('view-receipts')" 
+              class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm"
+            >
+              View Receipt
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Money Form -->
+        <div v-else-if="activeTabId === 'mobile-money'">
           <form @submit.prevent="submitMobileMoneyForm">
             <div class="mb-4">
               <label class="block text-gray-700 mb-1 text-sm font-medium">Select Network</label>
@@ -74,6 +118,28 @@
               />
             </div>
 
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-1 text-sm font-medium">Full Name</label>
+              <input
+                v-model="mobileMoneyForm.name"
+                type="text"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-color focus:border-transparent"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-1 text-sm font-medium">Email Address</label>
+              <input
+                v-model="mobileMoneyForm.email"
+                type="email"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-color focus:border-transparent"
+                placeholder="Enter your email address"
+                required
+              />
+            </div>
+
             <div class="mb-6">
               <label class="block text-gray-700 mb-1 text-sm font-medium">Amount (GHS)</label>
               <input
@@ -94,6 +160,7 @@
           </form>
         </div>
 
+        <!-- Bank Transfer Form -->
         <div v-else-if="activeTabId === 'bank-transfer'">
           <div class="space-y-2 mb-6">
             <div class="bg-gray-50 rounded-lg p-6 mb-4">
@@ -138,16 +205,85 @@
             </div>
           </div>
 
-          <button
-            @click="$emit('close')"
-            class="w-full bg-accent-color text-dark-color font-bold py-3 px-4 rounded-lg hover:bg-yellow-600 transition-colors shadow-md"
-          >
-            I've Completed My Transfer
-          </button>
+          <form @submit.prevent="submitBankTransferForm" class="space-y-4">
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-1 text-sm font-medium">Full Name</label>
+              <input
+                v-model="bankTransferForm.name"
+                type="text"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-color focus:border-transparent"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-1 text-sm font-medium">Email Address</label>
+              <input
+                v-model="bankTransferForm.email"
+                type="email"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-color focus:border-transparent"
+                placeholder="Enter your email address"
+                required
+              />
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-1 text-sm font-medium">Phone Number</label>
+              <input
+                v-model="bankTransferForm.phone"
+                type="tel"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-color focus:border-transparent"
+                placeholder="Enter your phone number"
+                required
+              />
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-1 text-sm font-medium">Amount (GHS)</label>
+              <input
+                v-model="bankTransferForm.amount"
+                type="number"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-color focus:border-transparent"
+                placeholder="Enter donation amount"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-accent-color text-dark-color font-bold py-3 px-4 rounded-lg hover:bg-yellow-600 transition-colors shadow-md"
+            >
+              Complete Donation
+            </button>
+          </form>
         </div>
 
+        <!-- Card Payment Form -->
         <div v-else-if="activeTabId === 'card-payment'">
           <form @submit.prevent="submitCardForm">
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-1 text-sm font-medium">Full Name</label>
+              <input
+                v-model="cardForm.name"
+                type="text"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-color focus:border-transparent"
+                placeholder="Your name as it appears on the card"
+                required
+              />
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-gray-700 mb-1 text-sm font-medium">Email Address</label>
+              <input
+                v-model="cardForm.email"
+                type="email"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-color focus:border-transparent"
+                placeholder="Enter your email address"
+                required
+              />
+            </div>
+
             <div class="mb-4">
               <label class="block text-gray-700 mb-1 text-sm font-medium">Card Number</label>
               <input
@@ -184,12 +320,12 @@
             </div>
 
             <div class="mb-4">
-              <label class="block text-gray-700 mb-1 text-sm font-medium">Cardholder Name</label>
+              <label class="block text-gray-700 mb-1 text-sm font-medium">Phone Number</label>
               <input
-                v-model="cardForm.name"
-                type="text"
+                v-model="cardForm.phone"
+                type="tel"
                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-color focus:border-transparent"
-                placeholder="Your name as it appears on the card"
+                placeholder="Enter your phone number"
                 required
               />
             </div>
@@ -220,6 +356,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import DonationService from "@/services/donationService";
 
 // Props and emits
 const props = defineProps<{
@@ -229,7 +366,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "close"): void;
-  (e: "donate", method: string, details: any): void;
+  (e: "donate-complete", transactionId: string): void;
+  (e: "view-receipts"): void;
 }>();
 
 // Tab management
@@ -254,6 +392,15 @@ const activeTab = computed(() => {
 const mobileMoneyForm = ref({
   network: "",
   phone: "",
+  name: "",
+  email: "",
+  amount: props.amount,
+});
+
+const bankTransferForm = ref({
+  name: "",
+  email: "",
+  phone: "",
   amount: props.amount,
 });
 
@@ -262,21 +409,165 @@ const cardForm = ref({
   expiry: "",
   cvv: "",
   name: "",
+  email: "",
+  phone: "",
   amount: props.amount,
 });
 
+// State management
+const isSubmitting = ref(false);
+const errorMessage = ref("");
+const successResult = ref(false);
+const successMessage = ref("");
+const transactionId = ref("");
+
 // Form submissions
-const submitMobileMoneyForm = () => {
-  emit("donate", "mobile-money", mobileMoneyForm.value);
+const submitMobileMoneyForm = async () => {
+  try {
+    isSubmitting.value = true;
+    errorMessage.value = "";
+
+    // Initiate donation with DonationService
+    DonationService.initiateDonation(Number(mobileMoneyForm.value.amount), "mobile-money");
+    
+    // Process mobile money donation
+    const response = await DonationService.processMobileMoneyDonation({
+      network: mobileMoneyForm.value.network,
+      phone: mobileMoneyForm.value.phone,
+      name: mobileMoneyForm.value.name,
+      email: mobileMoneyForm.value.email,
+      amount: Number(mobileMoneyForm.value.amount),
+    });
+
+    if (response.success) {
+      transactionId.value = response.transactionId || "";
+      
+      // If there's a payment link, redirect to it
+      if (response.paymentLink) {
+        // Emit the completion event with transaction ID before redirecting
+        emit("donate-complete", transactionId.value);
+        
+        // Redirect to payment gateway
+        window.location.href = response.paymentLink;
+        return;
+      }
+      
+      // Otherwise show success message
+      successResult.value = true;
+      successMessage.value = response.message || "Your donation has been processed successfully!";
+      
+      // Emit the completion event with transaction ID
+      emit("donate-complete", transactionId.value);
+    } else {
+      throw new Error(response.message || "Failed to process mobile money payment");
+    }
+  } catch (error) {
+    console.error("Error processing mobile money donation:", error);
+    errorMessage.value = error instanceof Error ? error.message : "An error occurred while processing your donation. Please try again.";
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 
-const submitCardForm = () => {
-  emit("donate", "card-payment", cardForm.value);
+const submitBankTransferForm = async () => {
+  try {
+    isSubmitting.value = true;
+    errorMessage.value = "";
+
+    // Initiate donation with DonationService
+    DonationService.initiateDonation(Number(bankTransferForm.value.amount), "bank-transfer");
+    
+    // Process bank transfer
+    const response = await DonationService.processBankTransfer({
+      name: bankTransferForm.value.name,
+      email: bankTransferForm.value.email,
+      phone: bankTransferForm.value.phone,
+      amount: Number(bankTransferForm.value.amount),
+    });
+
+    if (response.success) {
+      transactionId.value = response.transactionId || "";
+      
+      // If there's a payment link, redirect to it
+      if (response.paymentLink) {
+        // Emit the completion event with transaction ID before redirecting
+        emit("donate-complete", transactionId.value);
+        
+        // Redirect to payment gateway
+        window.location.href = response.paymentLink;
+        return;
+      }
+      
+      // Otherwise show success message
+      successResult.value = true;
+      successMessage.value = response.message || "Your bank transfer information has been recorded!";
+      
+      // Emit the completion event with transaction ID
+      emit("donate-complete", transactionId.value);
+    } else {
+      throw new Error(response.message || "Failed to process bank transfer");
+    }
+  } catch (error) {
+    console.error("Error processing bank transfer:", error);
+    errorMessage.value = error instanceof Error ? error.message : "An error occurred while processing your bank transfer. Please try again.";
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const submitCardForm = async () => {
+  try {
+    isSubmitting.value = true;
+    errorMessage.value = "";
+
+    // Initiate donation with DonationService
+    DonationService.initiateDonation(Number(cardForm.value.amount), "card-payment");
+    
+    // Process card payment
+    const response = await DonationService.processCardPayment({
+      name: cardForm.value.name,
+      email: cardForm.value.email,
+      phone: cardForm.value.phone,
+      number: cardForm.value.number,
+      expiry: cardForm.value.expiry,
+      cvv: cardForm.value.cvv,
+      amount: Number(cardForm.value.amount),
+    });
+
+    if (response.success) {
+      transactionId.value = response.transactionId || "";
+      
+      // If there's a payment link, redirect to it
+      if (response.paymentLink) {
+        // Emit the completion event with transaction ID before redirecting
+        emit("donate-complete", transactionId.value);
+        
+        // Redirect to payment gateway
+        window.location.href = response.paymentLink;
+        return;
+      }
+      
+      // Otherwise show success message
+      successResult.value = true;
+      successMessage.value = response.message || "Your card payment has been processed successfully!";
+      
+      // Emit the completion event with transaction ID
+      emit("donate-complete", transactionId.value);
+    } else {
+      throw new Error(response.message || "Failed to process card payment");
+    }
+  } catch (error) {
+    console.error("Error processing card payment:", error);
+    errorMessage.value = error instanceof Error ? error.message : "An error occurred while processing your card payment. Please try again.";
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 
 onMounted(() => {
   // Set amount from props
   mobileMoneyForm.value.amount = props.amount;
+  bankTransferForm.value.amount = props.amount;
   cardForm.value.amount = props.amount;
 });
 </script>

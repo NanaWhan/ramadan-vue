@@ -1,7 +1,42 @@
 <template>
   <div class="donate-view">
+    <!-- Payment Processing Modal (shown when returning from payment gateway) -->
+    <div v-if="isProcessingCallback" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div class="bg-white p-8 rounded-xl max-w-md w-full text-center">
+        <svg class="animate-spin h-12 w-12 text-accent-color mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <h3 class="text-xl font-bold mb-2">Verifying Payment</h3>
+        <p class="text-gray-600">Please wait while we verify your donation...</p>
+      </div>
+    </div>
+
+    <!-- Payment Error Modal -->
+    <div v-if="paymentError" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div class="bg-white p-8 rounded-xl max-w-md w-full">
+        <div class="flex items-center mb-4">
+          <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold">Payment Failed</h3>
+        </div>
+        <p class="text-gray-600 mb-6">{{ paymentErrorMessage }}</p>
+        <div class="flex justify-end">
+          <button 
+            @click="dismissPaymentError" 
+            class="bg-accent-color text-dark-color px-6 py-2 rounded-lg font-bold"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Donation Confirmation (shows only after successful donation) -->
-    <div v-if="showConfirmation">
+    <div v-else-if="showConfirmation">
       <DonationConfirmation
         :transaction-id="lastDonation.transactionId"
         :amount="lastDonation.amount"
@@ -92,19 +127,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- <div class="bg-white rounded-lg shadow-md p-6">
-              <h3 class="text-xl font-bold mb-4">Donate Monthly</h3>
-              <p class="text-gray-600 mb-4">
-                Setup a recurring monthly donation to provide consistent support throughout the year.
-              </p>
-              <button 
-                class="bg-accent-color text-dark-color font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition-colors"
-                @click="openDonationModal(selectedAmount, true)"
-              >
-                Set Up Monthly Donation
-              </button>
-            </div> -->
           </div>
         </div>
       </section>
@@ -195,7 +217,7 @@
                     href="tel:+233249058729"
                     class="text-accent-color hover:underline"
                   >
-                    > +233 249 058 729
+                    +233 249 058 729
                   </a>
                 </div>
               </div>
@@ -312,28 +334,34 @@
       :initial-tab="activePaymentMethod"
       @close="showDonationModal = false"
       @donate-complete="handleDonationComplete"
-      @view-receipts="showConfirmation = true"
+      @view-receipts="showReceipt"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import ApiService from "@/services/apiService";
 import DonationService from "@/services/donationService";
 import DonationCounter from "@/components/home/DonationCounter.vue";
 import EnhancedDonationModal from "@/components/shared/EnhancedDonationModal.vue";
 import DonationConfirmation from "@/components/shared/DonationConfirmation.vue";
-import MobileIcon from "../components/icons/MobileIcon.vue";
-import CardIcon from "../components/icons/CardIcon.vue";
-import BankIcon from "../components/icons/BankIcon.vue";
-import bannerImage from "../assets/images/banner.jpg";
-import testimonialsImage1 from "../assets/images/testimonial1.jpg";
-import testimonialsImage2 from "../assets/images/testimonial2.jpg";
+import MobileIcon from "@/components/icons/MobileIcon.vue";
+import CardIcon from "@/components/icons/CardIcon.vue";
+import BankIcon from "@/components/icons/BankIcon.vue";
+import bannerImage from "@/assets/images/banner.jpg";
+import testimonialsImage1 from "@/assets/images/testimonial1.jpg";
+import testimonialsImage2 from "@/assets/images/testimonial2.jpg";
 
 // Donation counter reference
 const donationCounterRef = ref<InstanceType<typeof DonationCounter> | null>(
   null
 );
+
+// State for callback processing
+const isProcessingCallback = ref(false);
+const paymentError = ref(false);
+const paymentErrorMessage = ref("");
 
 // Impact cards
 const impactCards = [
@@ -362,7 +390,7 @@ const donationOptions = [
       "Make a quick and secure donation using MTN Mobile Money, Telecel Cash, or AirtelTigo Money.",
     buttonText: "Donate via Mobile Money",
     method: "mobile-money",
-    icon: MobileIcon, // Use the component reference, not a string
+    icon: MobileIcon,
   },
   {
     title: "Bank Transfer",
@@ -370,7 +398,7 @@ const donationOptions = [
       "Make a direct bank transfer to our account. Ideal for larger donations.",
     buttonText: "Donate via Bank Transfer",
     method: "bank-transfer",
-    icon: BankIcon, // Use the component reference, not a string
+    icon: BankIcon,
   },
   {
     title: "Card Payment",
@@ -378,7 +406,7 @@ const donationOptions = [
       "Use your debit or credit card to make a secure online donation.",
     buttonText: "Donate via Card",
     method: "card-payment",
-    icon: CardIcon, // Use the component reference, not a string
+    icon: CardIcon,
   },
 ];
 
@@ -455,25 +483,26 @@ const openDonationModal = (amount: number, method = "") => {
 };
 
 // Handle donation completion
-const handleDonationComplete = (transactionId: string) => {
-  // Get the last donation from the service
-  const donationHistory = DonationService.getDonationHistory();
-  if (donationHistory.value.length > 0) {
-    const donation = donationHistory.value[donationHistory.value.length - 1];
-    lastDonation.value = {
-      transactionId: donation.transactionId,
-      amount: donation.amount,
-      date: donation.date,
-      method: getPaymentMethodName(donation.method),
-    };
-  }
+const handleDonationComplete = async (transactionId: string) => {
+  // Get the payment method name for display
+  const paymentMethod = activePaymentMethod.value 
+    ? getPaymentMethodName(activePaymentMethod.value) 
+    : "Online Payment";
 
-  // Update the donation counter
-  if (donationCounterRef.value) {
-    donationCounterRef.value.makeDonation(donationAmount.value);
-  }
+  // Update last donation details
+  lastDonation.value = {
+    transactionId: transactionId,
+    amount: donationAmount.value,
+    date: new Date(),
+    method: paymentMethod,
+  };
 
-  // Reset state and show confirmation
+  // Close modal - we're likely going to redirect
+  showDonationModal.value = false;
+};
+
+// Show receipt
+const showReceipt = () => {
   showDonationModal.value = false;
   showConfirmation.value = true;
 };
@@ -484,26 +513,118 @@ const getPaymentMethodName = (methodId: string): string => {
   return method ? method.title : "Online Payment";
 };
 
-// Reset state when navigating back to this page
-onMounted(() => {
-  // Check if there's a transaction_id in the URL (for when returning from external payment)
+// Dismiss payment error and return to donation page
+const dismissPaymentError = () => {
+  paymentError.value = false;
+  paymentErrorMessage.value = "";
+};
+
+// Handle payment gateway callback
+const handlePaymentCallback = async () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const transactionId = urlParams.get("transaction_id");
-
-  if (transactionId) {
-    lastDonation.value = {
-      transactionId,
-      amount: Number(urlParams.get("amount") || 0),
-      date: new Date(),
-      method: "Online Payment",
-    };
-    showConfirmation.value = true;
-
-    // Clean up URL
-    window.history.replaceState({}, document.title, window.location.pathname);
-  } else {
-    showConfirmation.value = false;
+  
+  // Check if this is a payment callback
+  const hasCallback = urlParams.has('transaction_id') || 
+                     urlParams.has('tx_ref') || 
+                     urlParams.has('reference') || 
+                     urlParams.has('status');
+                     
+  if (hasCallback) {
+    isProcessingCallback.value = true;
+    
+    try {
+      // Process the callback with DonationService
+      const callbackResult = DonationService.handleDonationCallback(urlParams);
+      
+      // If we have a transaction ID, verify the payment status with the backend
+      if (callbackResult.transactionId) {
+        // This would typically call an API endpoint to verify the payment
+        const verificationResult = await DonationService.verifyDonationStatus(callbackResult.transactionId);
+        
+        if (verificationResult.success) {
+          // Payment was successful, show confirmation
+          lastDonation.value = {
+            transactionId: callbackResult.transactionId,
+            amount: callbackResult.amount || verificationResult.amount,
+            date: new Date(),
+            method: getPaymentMethodForStatus(callbackResult.status)
+          };
+          
+          // Update donation counter
+          if (lastDonation.value.amount > 0 && donationCounterRef.value) {
+            donationCounterRef.value.makeDonation(lastDonation.value.amount);
+          }
+          
+          // Show confirmation page
+          showConfirmation.value = true;
+        } else {
+          // Payment failed, show error
+          paymentError.value = true;
+          paymentErrorMessage.value = verificationResult.message || "Your payment could not be verified. Please try again or contact support.";
+        }
+      } else {
+        // No transaction ID found, show generic error
+        paymentError.value = true;
+        paymentErrorMessage.value = "Your payment could not be processed. Please try again or use a different payment method.";
+      }
+    } catch (error) {
+      console.error("Error handling payment callback:", error);
+      paymentError.value = true;
+      paymentErrorMessage.value = "An error occurred while processing your payment. Please try again later.";
+    } finally {
+      isProcessingCallback.value = false;
+      
+      // Clean up URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }
+};
+
+// Helper to determine payment method from status
+const getPaymentMethodForStatus = (status: string): string => {
+  status = status.toLowerCase();
+  
+  if (status.includes('mtn') || status.includes('mobile') || status.includes('momo')) {
+    return 'Mobile Money';
+  } else if (status.includes('card') || status.includes('visa') || status.includes('mastercard')) {
+    return 'Card Payment';
+  } else if (status.includes('bank') || status.includes('transfer')) {
+    return 'Bank Transfer';
+  }
+  
+  return 'Online Payment';
+};
+
+// Update donation counter with latest statistics
+const updateDonationCounter = async () => {
+  try {
+    // Fetch latest donation statistics
+    const response = await ApiService.getDonationStatistics();
+    
+    if (response && response.isSuccess && donationCounterRef.value) {
+      // Update the counter with real data
+      const stats = response.result;
+      
+      // This uses the component's internal update method
+      if (donationCounterRef.value) {
+        donationCounterRef.value.makeDonation(0); // Just trigger an update
+      }
+    }
+  } catch (error) {
+    console.error("Error updating donation counter:", error);
+  }
+};
+
+// On component mount, handle any payment callbacks and initialize
+onMounted(async () => {
+  // Handle payment gateway callbacks
+  await handlePaymentCallback();
+  
+  // Get latest donation statistics
+  await updateDonationCounter();
+  
+  // Initialize with default selected amount
+  donationAmount.value = selectedAmount.value;
 });
 </script>
 
@@ -514,5 +635,9 @@ onMounted(() => {
 
 .bg-accent-color\/10 {
   background-color: rgba(244, 190, 55, 0.1);
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
 }
 </style>
