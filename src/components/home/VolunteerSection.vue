@@ -1,3 +1,4 @@
+<!-- src/components/home/VolunteerSection.vue -->
 <template>
   <section id="volunteer" class="py-20 bg-gray-100">
     <div class="container mx-auto px-4">
@@ -68,7 +69,32 @@
         <div class="bg-white rounded-lg shadow-md p-8">
           <h3 class="text-2xl font-bold mb-6">Sign Up to Volunteer</h3>
           
-          <form @submit.prevent="submitVolunteerForm" class="space-y-4">
+          <!-- Success message -->
+          <div v-if="formSuccess" class="bg-green-50 text-green-700 p-4 rounded-lg mb-4">
+            <p class="font-bold">Success!</p>
+            <p>{{ successMessage }}</p>
+            <button 
+              @click="resetForm()" 
+              class="mt-2 bg-green-700 text-white px-4 py-2 rounded-lg text-sm"
+            >
+              Register Another Volunteer
+            </button>
+          </div>
+
+          <!-- Error message -->
+          <div v-else-if="formError" class="bg-red-50 text-red-700 p-4 rounded-lg mb-4">
+            <p class="font-bold">Error</p>
+            <p>{{ errorMessage }}</p>
+            <button 
+              @click="formError = false" 
+              class="mt-2 bg-red-700 text-white px-4 py-2 rounded-lg text-sm"
+            >
+              Try Again
+            </button>
+          </div>
+          
+          <!-- Form -->
+          <form v-else @submit.prevent="submitVolunteerForm" class="space-y-4">
             <div>
               <label class="block text-gray-700 mb-1">Full Name</label>
               <input
@@ -103,6 +129,22 @@
             </div>
             
             <div>
+              <label class="block text-gray-700 mb-1">City</label>
+              <select
+                v-model="volunteerForm.city"
+                class="w-full bg-gray-100 border-0 rounded-lg p-3"
+                required
+              >
+                <option value="">Select City</option>
+                <option value="Tema">Tema</option>
+                <option value="Kumasi">Kumasi</option>
+                <option value="Tamale">Tamale</option>
+                <option value="Accra">Accra</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            
+            <div>
               <label class="block text-gray-700 mb-1">Message (Optional)</label>
               <textarea
                 v-model="volunteerForm.message"
@@ -115,9 +157,16 @@
             <div class="pt-2">
               <button 
                 type="submit" 
-                class="bg-accent-color text-dark-color font-bold py-3 px-6 rounded-full hover:bg-yellow-600 transition-colors w-full"
+                class="relative bg-accent-color text-dark-color font-bold py-3 px-6 rounded-full hover:bg-yellow-600 transition-colors w-full disabled:opacity-75"
+                :disabled="isSubmitting"
               >
-                Sign Up to Volunteer
+                <span v-if="isSubmitting" class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-dark-color" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </span>
+                {{ isSubmitting ? 'Submitting...' : 'Sign Up to Volunteer' }}
               </button>
             </div>
           </form>
@@ -129,11 +178,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import ApiService, { type VolunteerRegistrationRequest } from '@/services/apiService'
 
+// Volunteer form
 interface VolunteerFormData {
   name: string
   email: string
   phone: string
+  city: string
   message: string
 }
 
@@ -141,23 +193,56 @@ const volunteerForm = ref<VolunteerFormData>({
   name: '',
   email: '',
   phone: '',
+  city: '',
   message: ''
 })
 
-const submitVolunteerForm = () => {
-  // In a real app, you would send this to an API
-  console.log('Volunteer form submitted:', volunteerForm.value)
-  
-  // Show success message
-  alert('Thank you for signing up to volunteer! We will contact you soon.')
-  
-  // Reset form
+const isSubmitting = ref(false)
+const formSuccess = ref(false)
+const formError = ref(false)
+const successMessage = ref('Thank you for signing up to volunteer! We will contact you soon.')
+const errorMessage = ref('')
+
+const submitVolunteerForm = async () => {
+  try {
+    isSubmitting.value = true
+    formError.value = false
+    
+    const volunteerData: VolunteerRegistrationRequest = {
+      name: volunteerForm.value.name,
+      email: volunteerForm.value.email,
+      phone: volunteerForm.value.phone,
+      city: volunteerForm.value.city,
+      message: volunteerForm.value.message || ''
+    }
+    
+    const response = await ApiService.registerVolunteer(volunteerData)
+    
+    if (response && response.isSuccess) {
+      formSuccess.value = true
+      successMessage.value = response.message || 'Thank you for signing up to volunteer! We will contact you soon.'
+    } else {
+      throw new Error(response.message || 'Failed to register as volunteer')
+    }
+  } catch (error) {
+    console.error('Error registering volunteer:', error)
+    formError.value = true
+    errorMessage.value = error instanceof Error ? error.message : 'An error occurred while submitting your registration. Please try again.'
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+const resetForm = () => {
   volunteerForm.value = {
     name: '',
     email: '',
     phone: '',
+    city: '',
     message: ''
   }
+  formSuccess.value = false
+  formError.value = false
 }
 </script>
 

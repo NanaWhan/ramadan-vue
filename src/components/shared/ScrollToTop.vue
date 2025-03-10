@@ -2,7 +2,7 @@
   <button
     v-show="showButton"
     @click="scrollToTop"
-    class="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-accent-color text-dark-color shadow-md hover:bg-yellow-600 transition-all duration-300 flex items-center justify-center"
+    class="fixed bottom-0.5 right-2 z-50 w-12 h-12 rounded-full bg-accent-color text-dark-color shadow-md hover:bg-yellow-600 transition-all duration-300 flex items-center justify-center"
     aria-label="Scroll to top"
   >
     <svg

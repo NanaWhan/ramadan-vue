@@ -1,3 +1,4 @@
+<!-- src/components/layout/TheFooter.vue -->
 <template>
   <footer class="py-16 bg-dark-color text-white">
     <div class="container mx-auto px-4">
@@ -45,20 +46,39 @@
           <p class="text-gray-400 mb-4">
             Subscribe to our newsletter for updates
           </p>
+          
+          <!-- Success message -->
+          <div v-if="subscriptionSuccess" class="bg-green-800 text-white p-4 rounded-lg mb-4">
+            <p>{{ successMessage }}</p>
+          </div>
+
+          <!-- Error message -->
+          <div v-if="subscriptionError" class="bg-red-800 text-white p-4 rounded-lg mb-4">
+            <p>{{ errorMessage }}</p>
+          </div>
+          
           <form @submit.prevent="subscribeToNewsletter" class="newsletter-form">
             <div class="flex">
               <input
                 v-model="phoneNumber"
-                type="email"
+                type="tel"
                 class="w-full bg-transparent text-white border border-white px-3 py-2 rounded-l"
                 placeholder="Your phone number"
                 required
+                :disabled="isSubmitting"
               />
               <button
                 type="submit"
-                class="bg-accent-color text-dark-color px-4 py-2 rounded-r font-medium"
+                class="relative bg-accent-color text-dark-color px-4 py-2 rounded-r font-medium disabled:opacity-75"
+                :disabled="isSubmitting"
               >
-                Subscribe
+                <span v-if="isSubmitting" class="absolute left-2 top-1/2 transform -translate-y-1/2">
+                  <svg class="animate-spin h-4 w-4 text-dark-color" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </span>
+                <span class="pl-4">{{ isSubmitting ? 'Subscribing...' : 'Subscribe' }}</span>
               </button>
             </div>
           </form>
@@ -81,10 +101,18 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { RouterLink } from "vue-router";
-import logoImage from '@/assets/images/logo2.png'
+import logoImage from '@/assets/images/logo2.png';
+import ApiService, { type NewsletterRequest } from '@/services/apiService';
 
-const phoneNumber  = ref("");
+const phoneNumber = ref("");
 const currentYear = computed(() => new Date().getFullYear());
+
+// Newsletter subscription state
+const isSubmitting = ref(false);
+const subscriptionSuccess = ref(false);
+const subscriptionError = ref(false);
+const successMessage = ref('');
+const errorMessage = ref('');
 
 const quickLinks = [
   { label: "Home", to: "/" },
@@ -100,10 +128,43 @@ const resourceLinks = [
   { label: "Contact", to: "/contact" },
 ];
 
-const subscribeToNewsletter = () => {
-  // Handle newsletter subscription
-  alert(`Thank you for subscribing with ${phoneNumber.value}!`);
-  phoneNumber.value = "";
+const subscribeToNewsletter = async () => {
+  if (!phoneNumber.value) return;
+
+  try {
+    isSubmitting.value = true;
+    subscriptionError.value = false;
+    
+    const newsletterData: NewsletterRequest = {
+      phoneNumber: phoneNumber.value
+    };
+    
+    const response = await ApiService.subscribeToNewsletter(newsletterData);
+    
+    if (response && response.isSuccess) {
+      subscriptionSuccess.value = true;
+      successMessage.value = response.message || 'Thank you for subscribing! You will receive updates via SMS.';
+      phoneNumber.value = "";
+      
+      // Hide success message after 5 seconds
+      setTimeout(() => {
+        subscriptionSuccess.value = false;
+      }, 5000);
+    } else {
+      throw new Error(response.message || 'Failed to subscribe to newsletter');
+    }
+  } catch (error) {
+    console.error('Error subscribing to newsletter:', error);
+    subscriptionError.value = true;
+    errorMessage.value = error instanceof Error ? error.message : 'An error occurred. Please try again.';
+    
+    // Hide error message after 5 seconds
+    setTimeout(() => {
+      subscriptionError.value = false;
+    }, 5000);
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 </script>
 

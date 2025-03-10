@@ -1,3 +1,4 @@
+<!-- src/components/home/GetInvolved.vue -->
 <template>
   <section id="get-involved" class="py-20">
     <div class="container mx-auto px-4">
@@ -90,24 +91,23 @@ const donationOptions = ref<DonationOption[]>([
 ])
 
 // Donation modal
-const showDonationModal = ref(false)
-const selectedAmount = ref(0)
+const showDonationModal = ref(false);
+const selectedAmount = ref(0);
 
 const openDonationModal = (amount: number) => {
-  selectedAmount.value = amount
-  showDonationModal.value = true
-}
+  selectedAmount.value = amount;
+  showDonationModal.value = true;
+};
 
 const processDonation = (method: string, details: any) => {
-  // Process donation (you would typically call an API here)
-  console.log(`Processing ${method} donation for GHS ${selectedAmount.value}`, details)
+  console.log(`Processing ${method} donation for GHS ${selectedAmount.value}:`, details);
   
   // Close modal
-  showDonationModal.value = false
+  showDonationModal.value = false;
   
   // Show success message
-  alert(`Thank you for your donation of GHS ${selectedAmount.value}!`)
-}
+  alert(`Thank you for your donation of GHS ${selectedAmount.value}!`);
+};
 </script>
 
 <style scoped>

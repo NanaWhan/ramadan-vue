@@ -1,3 +1,4 @@
+<!-- src/components/home/ContactForm.vue -->
 <template>
   <section id="contact" class="py-20">
     <div class="container mx-auto px-4">
@@ -68,7 +69,31 @@
         
         <!-- Contact Form -->
         <div class="md:col-span-7">
-          <form @submit.prevent="submitContactForm" class="space-y-4">
+          <!-- Success message -->
+          <div v-if="formSuccess" class="bg-green-50 text-green-700 p-4 rounded-lg mb-4">
+            <p class="font-bold">Message Sent Successfully!</p>
+            <p>{{ successMessage }}</p>
+            <button 
+              @click="resetForm" 
+              class="mt-2 bg-green-700 text-white px-4 py-2 rounded-lg text-sm"
+            >
+              Send Another Message
+            </button>
+          </div>
+
+          <!-- Error message -->
+          <div v-else-if="formError" class="bg-red-50 text-red-700 p-4 rounded-lg mb-4">
+            <p class="font-bold">Message Failed</p>
+            <p>{{ errorMessage }}</p>
+            <button 
+              @click="formError = false" 
+              class="mt-2 bg-red-700 text-white px-4 py-2 rounded-lg text-sm"
+            >
+              Try Again
+            </button>
+          </div>
+          
+          <form v-else @submit.prevent="submitContactForm" class="space-y-4">
             <div>
               <input
                 v-model="contactForm.name"
@@ -100,7 +125,9 @@
             </div>
             
             <div>
-              <Button type="submit" variant="primary">Send Message</Button>
+              <Button type="submit" variant="primary" :loading="isSubmitting">
+                {{ isSubmitting ? 'Sending...' : 'Send Message' }}
+              </Button>
             </div>
           </form>
         </div>
@@ -112,6 +139,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import Button from '@/components/shared/Button.vue'
+// We're using a mock API endpoint for contact form since it wasn't provided
+// In a real implementation, this would call the actual API
 
 // Contact form data
 interface ContactFormData {
@@ -126,21 +155,50 @@ const contactForm = ref<ContactFormData>({
   message: ''
 })
 
+// Form state
+const isSubmitting = ref(false);
+const formSuccess = ref(false);
+const formError = ref(false);
+const successMessage = ref('');
+const errorMessage = ref('');
+
 // Submit form
-const submitContactForm = () => {
-  // In a real app, you would send this to an API
-  console.log('Contact form submitted:', contactForm.value)
-  
-  // Show success message
-  alert('Thank you for your message! We will get back to you soon.')
-  
-  // Reset form
+const submitContactForm = async () => {
+  try {
+    isSubmitting.value = true;
+    formError.value = false;
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Simulate successful response
+    formSuccess.value = true;
+    successMessage.value = 'Thank you for your message! We will get back to you soon.';
+    
+    // Reset form
+    contactForm.value = {
+      name: '',
+      email: '',
+      message: ''
+    };
+  } catch (error) {
+    console.error('Error submitting contact form:', error);
+    formError.value = true;
+    errorMessage.value = error instanceof Error ? error.message : 'An error occurred while sending your message. Please try again.';
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const resetForm = () => {
   contactForm.value = {
     name: '',
     email: '',
     message: ''
-  }
-}
+  };
+  formSuccess.value = false;
+  formError.value = false;
+};
 </script>
 
 <style scoped>
